@@ -1,0 +1,23 @@
+{
+  "name": "nodechat",
+  "version": "1.0.0",
+  "description": "NodeChat is a peer-to-peer (P2P) chat application built using Node.js. It enables direct and secure communication between users with no reliance on a central server. NodeChat offers a sleek and user-friendly web interface, ensuring seamless interaction and privacy for its users.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1",
+    "socket.io-p2p": "^2.2.0",
+    "webrtc": "^1.14.1"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.7",
+    "nodemon": "^3.1.9"
+  }
+}
