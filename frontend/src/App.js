@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState} from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/HomePage';
@@ -15,14 +15,19 @@ function App() {
         />
         
   */
-  const isLoggedIn = false; // Change this dynamically based on actual auth status
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  }
+
 
   return (
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<HomePage isLoggedIn={isLoggedIn} handleLogout={handleLogout}/>} />
+        <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn}/>} />
         <Route path="/signup" element={<SignupPage />} />
 
         {/* Protected Routes */}

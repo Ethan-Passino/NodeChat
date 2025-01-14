@@ -1,11 +1,11 @@
 import React from 'react';
 import NavBar from '../components/NavBar'
 
-const HomePage = () => {
+const HomePage = ({ isLoggedIn, handleLogout }) => {
     return (
         <div className="bg-gradient-to-r from-red-900 to-black min-h-screen flex flex-col">
             {/* Navigation Bar */}
-            <NavBar />
+            <NavBar isLoggedIn={isLoggedIn} handleLogout={handleLogout}/>
 
             {/* Hero Section */}
             <header className="flex-grow flex flex-col justify-center items-center text-center text-white">

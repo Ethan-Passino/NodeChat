@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import NavBar from "../components/NavBar";
+import { useNavigate } from 'react-router-dom';
 
-const LoginPage = () => {
+const LoginPage = ({ setIsLoggedIn }) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         usernameOrEmail: '',
         password: '',
@@ -36,8 +38,10 @@ const LoginPage = () => {
         e.preventDefault();
 
         if (validateForm()) {
-            // Form is valid, proceed with submission logic (API calls later)
+            // Simulate a successful login
             console.log("Form submitted:", formData);
+            setIsLoggedIn(true); // Update isLoggedIn state in App.js
+            navigate('/');
         } else {
             console.log("Validation failed:", errors);
         }

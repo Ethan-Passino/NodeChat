@@ -1,24 +1,21 @@
+require('dotenv').config();
 const express = require('express');
-const { Server } = require('socket.io');
-const http = require('http');
+const connectDB = require('./config/db');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
 
-const PORT = process.env.PORT || 3001;
+// Connect to MongoDB
+connectDB();
 
-app.get('/', (req, res) => {
-    res.send('NodeChat Backend');
-});
+// Middleware
+app.use(express.json());
 
-io.on('connection', (socket) => {
-    console.log('A user connected');
-    socket.on('disconnect', () => {
-        console.log('A user disconnected');
-    });
-});
+// Routes
+app.use('/api/users', userRoutes);
 
-server.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+// Server
+const PORT = process.env.PORT || 2000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
