@@ -45,13 +45,32 @@ const SignupPage = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (validateForm()) {
-            // Form is valid, proceed with submission logic (API calls later)
-            console.log("Form submitted:", formData);
-            navigate("/login");
+            // Form is valid, proceed with API call
+            try {
+                const response = await fetch('http://localhost:2000/api/users/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                       username: formData.username,
+                       email: formData.email,
+                       password: formData.password, 
+                    }),
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    navigate("/login");
+                }
+                else {
+                    setErrors({general: data.message }); 
+                }
+            } catch (error) {
+                setErrors({ general: "An error occured. Please try again later." });
+            }
             
         } else {
             console.log("Validation failed:", errors);

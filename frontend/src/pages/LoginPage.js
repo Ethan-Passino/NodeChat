@@ -34,14 +34,38 @@ const LoginPage = ({ setIsLoggedIn }) => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (validateForm()) {
             // Simulate a successful login
-            console.log("Form submitted:", formData);
-            setIsLoggedIn(true); // Update isLoggedIn state in App.js
-            navigate('/');
+            const newErrors = {};
+
+            try {
+                const response = await fetch('http://localhost:2000/api/users/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: formData.usernameOrEmail,
+                        password: formData.password,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if(response.ok) {
+                    setIsLoggedIn(true); // Update isLoggedIn state in App.js
+                    navigate('/');
+                } else {
+                    newErrors.password = data.message || "Invalid email or password";
+                    setErrors(newErrors);
+                }
+            } catch (error) {
+                newErrors.password = 'An error occured. Please try again later.';
+                setErrors(newErrors);
+                console.error('Login Error:', error);
+            }
+
         } else {
             console.log("Validation failed:", errors);
         }

@@ -30,16 +30,19 @@ exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Find user by email
-        const user = await User.findOne({ email });
+        // Find user by email or username
+        let user = await User.findOne({ email }); // First, try finding by email
         if (!user) {
-            return res.status(400).json({ message: 'Invalid email or password.' });
+            user = await User.findOne({ username: email }); // Then, try finding by username
+            if (!user) {
+                return res.status(400).json({ message: 'Invalid email/username or password.' });
+            }
         }
 
         // Compare passwords
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return res.status(400).json({ message: 'Invalid email or password.' });
+            return res.status(400).json({ message: 'Invalid email/username or password.' });
         }
 
         res.status(200).json({ message: 'Login successful.', userId: user._id });
@@ -47,6 +50,7 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: 'Server error.', error: error.message });
     }
 };
+
 
 // Get User Info
 exports.getUser = async (req, res) => {
