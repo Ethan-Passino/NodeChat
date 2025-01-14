@@ -1,13 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
-import HomePage from './HomePage';
+import HomePage from './pages/HomePage';
+import SignupPage from './pages/SignupPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
   // Simulate user authentication status
   /*
-          <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
         protected:
                 <Route 
           path="/chat" 
@@ -22,6 +22,8 @@ function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
 
         {/* Protected Routes */}
 
