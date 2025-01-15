@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 
-const UpdateProfilePage = ( {handleLogout} ) => {
+const UpdateProfilePage = ({ handleLogout }) => {
     const userId = localStorage.getItem('userId');
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
     const [formData, setFormData] = useState({
         newUsername: '',
         currentPassword: '',
@@ -22,11 +22,15 @@ const UpdateProfilePage = ( {handleLogout} ) => {
     const validateForm = () => {
         const newErrors = {};
 
-        if (formData.newPassword !== formData.confirmNewPassword) {
+        if (!formData.currentPassword) {
+            newErrors.currentPassword = "Current password is required.";
+        }
+
+        if (formData.newPassword && formData.newPassword !== formData.confirmNewPassword) {
             newErrors.newPassword = "Passwords do not match.";
         }
 
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$/;
         if (formData.newPassword && !passwordRegex.test(formData.newPassword)) {
             newErrors.newPassword = "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, a number, and a special character.";
         }
@@ -40,14 +44,22 @@ const UpdateProfilePage = ( {handleLogout} ) => {
 
         if (validateForm()) {
             try {
+                const body = {
+                    currentPassword: formData.currentPassword,
+                };
+
+                if (formData.newUsername) {
+                    body.newUsername = formData.newUsername;
+                }
+
+                if (formData.newPassword) {
+                    body.newPassword = formData.newPassword;
+                }
+
                 const response = await fetch(`http://localhost:2000/api/users/${userId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        newUsername: formData.newUsername,
-                        currentPassword: formData.currentPassword,
-                        newPassword: formData.newPassword,
-                    }),
+                    body: JSON.stringify(body),
                 });
 
                 const data = await response.json();
@@ -65,7 +77,7 @@ const UpdateProfilePage = ( {handleLogout} ) => {
 
     return (
         <div className="bg-gradient-to-r from-red-900 to-black min-h-screen flex flex-col text-white">
-            <NavBar isLoggedIn={isLoggedIn} handleLogout={handleLogout}/>
+            <NavBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
             <div className="flex-grow flex flex-col items-center justify-center">
                 <h1 className="text-4xl font-extrabold mb-8">Update Profile</h1>
                 <form className="bg-red-800 p-6 rounded-lg shadow-md w-96 space-y-4" onSubmit={handleSubmit}>
@@ -119,6 +131,7 @@ const UpdateProfilePage = ( {handleLogout} ) => {
                         />
                     </div>
                     {errors.newPassword && <p className="text-red-400 text-sm">{errors.newPassword}</p>}
+                    {errors.currentPassword && <p className="text-red-400 text-sm">{errors.currentPassword}</p>}
                     {errors.general && <p className="text-red-400 text-sm">{errors.general}</p>}
                     <button
                         type="submit"
