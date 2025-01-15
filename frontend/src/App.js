@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import UpdateProfilePage from './pages/UpdateProfile';
+import ChatPage from './pages/chat/ChatPage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
@@ -59,6 +60,14 @@ function App() {
           )}
         />
 
+        <Route 
+          path="/chat"
+          element={isLoggedIn ? (
+            <ChatPage handleLogout={handleLogout} />
+          ): (
+            <Navigate to="/login" replace />
+          )}
+          />
         {/* Catch-All Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
