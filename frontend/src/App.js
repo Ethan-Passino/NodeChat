@@ -4,29 +4,31 @@ import './App.css';
 import HomePage from './pages/HomePage';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
+import UpdateProfilePage from './pages/UpdateProfile';
 
 function App() {
-  // Initialize authentication state from localStorage
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const storedStatus = localStorage.getItem('isLoggedIn');
     return storedStatus === 'true'; // Convert string to boolean
   });
 
-  const handleLogin = () => {
+  const [userId, setUserId] = useState(() => localStorage.getItem('userId'));
+  const handleLogin = (id) => {
     setIsLoggedIn(true);
-    localStorage.setItem('isLoggedIn', 'true'); // Persist to localStorage
+    localStorage.setItem('isLoggedIn', 'true');
   };
 
   const handleLogout = () => {
     setIsLoggedIn(false);
-    localStorage.setItem('isLoggedIn', 'false'); // Clear from localStorage
+    setUserId(null);
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userId');
   };
 
-  // Optional: Synchronize auth state when the app loads
   useEffect(() => {
-    const storedStatus = localStorage.getItem('isLoggedIn');
-    if (storedStatus === 'true') {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
       setIsLoggedIn(true);
+      setUserId(localStorage.getItem('userId'));
     }
   }, []);
 
@@ -48,13 +50,16 @@ function App() {
         />
 
         {/* Protected Routes */}
-        {/* Example: Add protected routes here */}
-        {/* <Route
-          path="/chat"
-          element={isLoggedIn ? <ChatPage /> : <Navigate to="/login" replace />}
-        /> */}
+        <Route
+          path="/update-profile"
+          element={isLoggedIn ? (
+            <UpdateProfilePage handleLogout={handleLogout} />
+          ) : (
+            <Navigate to="/login" replace />
+          )}
+        />
 
-        {/* Catch-All Redirect to Home */}
+        {/* Catch-All Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

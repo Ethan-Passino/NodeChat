@@ -1,6 +1,48 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
+// Update Profile
+exports.updateProfile = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const { newUsername, currentPassword, newPassword } = req.body;
+
+        // Find the user by ID
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Verify the current password
+        const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Current password is incorrect.' });
+        }
+
+        // Update the username if provided
+        if (newUsername) {
+            const usernameExists = await User.findOne({ username: newUsername });
+            if (usernameExists) {
+                return res.status(400).json({ message: 'Username is already taken.' });
+            }
+            user.username = newUsername;
+        }
+
+        // Update the password if provided
+        if (newPassword) {
+            const hashedPassword = await bcrypt.hash(newPassword, 10);
+            user.password = hashedPassword;
+        }
+
+        // Save the updated user
+        await user.save();
+
+        res.status(200).json({ message: 'Profile updated successfully.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error.', error: error.message });
+    }
+};
+
 // User Signup
 exports.signup = async (req, res) => {
     try {
@@ -44,7 +86,6 @@ exports.login = async (req, res) => {
         if (!isPasswordValid) {
             return res.status(400).json({ message: 'Invalid email/username or password.' });
         }
-
         res.status(200).json({ message: 'Login successful.', userId: user._id });
     } catch (error) {
         res.status(500).json({ message: 'Server error.', error: error.message });

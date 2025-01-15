@@ -27,6 +27,16 @@ const Navbar = ({ isLoggedIn, handleLogout }) => {
                                 </a>
                             </li>
                             <li>
+                                <a
+                                    href="/update-profile"
+                                    className="text-white hover:text-red-400 transition duration-300 ease-in-out transform hover:scale-110"
+                                    style={{ transition: 'transform 0.3s ease-in-out, color 0.3s ease-in-out' }}
+
+                                >
+                                    Update Profile
+                                </a>
+                            </li>
+                            <li>
                                 <button 
                                     onClick={handleLogout} 
                                     className="text-white hover:text-red-400 transition duration-300 ease-in-out transform hover:scale-110"

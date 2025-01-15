@@ -36,11 +36,8 @@ const LoginPage = ({ setIsLoggedIn }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         if (validateForm()) {
-            // Simulate a successful login
-            const newErrors = {};
-
             try {
                 const response = await fetch('http://localhost:2000/api/users/login', {
                     method: 'POST',
@@ -50,26 +47,25 @@ const LoginPage = ({ setIsLoggedIn }) => {
                         password: formData.password,
                     }),
                 });
-
+    
                 const data = await response.json();
-
-                if(response.ok) {
-                    setIsLoggedIn(true); // Update isLoggedIn state in App.js
+                console.log(data);
+    
+                if (response.ok) {
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userId', data.userId); // Save the userId from the API response
+                    setIsLoggedIn(true);
                     navigate('/');
                 } else {
-                    newErrors.password = data.message || "Invalid email or password";
-                    setErrors(newErrors);
+                    setErrors({ password: data.message || 'Invalid email or password.' });
                 }
             } catch (error) {
-                newErrors.password = 'An error occured. Please try again later.';
-                setErrors(newErrors);
+                setErrors({ password: 'An error occurred. Please try again later.' });
                 console.error('Login Error:', error);
             }
-
-        } else {
-            console.log("Validation failed:", errors);
         }
     };
+    
 
     return (
         <div className="bg-gradient-to-r from-red-900 to-black min-h-screen flex flex-col text-white">
