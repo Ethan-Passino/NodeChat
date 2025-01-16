@@ -6,6 +6,18 @@ const ChatHeader = ({ username, handleLogout }) => {
             <h1 className="text-2xl font-bold text-white">NodeChat</h1>
             <div className="flex items-center space-x-4">
                 <span className="text-white">Welcome, {username}</span>
+                <a 
+                    href="/" 
+                    className="bg-red-700 hover:bg-red-600 text-white font-bold py-1 px-3 rounded shadow-md transition-transform transform hover:scale-105"
+                >
+                    Home
+                </a>
+                <a 
+                    href="/update-profile" 
+                    className="bg-red-700 hover:bg-red-600 text-white font-bold py-1 px-3 rounded shadow-md transition-transform transform hover:scale-105"
+                >
+                    Update Profile
+                </a>
                 <button
                     onClick={handleLogout}
                     className="bg-red-700 hover:bg-red-600 text-white font-bold py-1 px-3 rounded shadow-md transition-transform transform hover:scale-105"
