@@ -49,22 +49,22 @@ const LoginPage = ({ setIsLoggedIn }) => {
                 });
     
                 const data = await response.json();
-                console.log(data);
     
                 if (response.ok) {
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('userId', data.userId); // Save the userId from the API response
+                    localStorage.setItem('token', data.token); // Save the token
+                    localStorage.setItem('userId', data.userId); // Save the userId                    setIsLoggedIn(true);
                     setIsLoggedIn(true);
                     navigate('/');
                 } else {
-                    setErrors({ password: data.message || 'Invalid email or password.' });
+                    setErrors({ general: data.message || 'Login failed.' });
                 }
             } catch (error) {
-                setErrors({ password: 'An error occurred. Please try again later.' });
-                console.error('Login Error:', error);
+                setErrors({ general: 'An error occurred. Please try again later.' });
+                console.error('Login error:', error);
             }
         }
     };
+    
     
 
     return (

@@ -3,7 +3,7 @@ import ChatHeader from './components/ChatHeader';
 import ChatWindow from './components/ChatWindow';
 import ChatInput from './components/ChatInput';
 import UserList from './components/UserList';
-import { fetchUserInfo } from './utils/api';
+import { fetchUserInfo, fetchMessages, saveMessage } from './utils/api';
 
 const ChatPage = ({ handleLogout }) => {
     const [user, setUser] = useState();
@@ -11,13 +11,13 @@ const ChatPage = ({ handleLogout }) => {
     const [users, setUsers] = useState(['User1', 'User2', 'User3']);
     const [isUserListVisible, setIsUserListVisible] = useState(true); // State to toggle UserList
 
+    // Fetch user information
     useEffect(() => {
         const userId = localStorage.getItem('userId');
         if (!userId) {
             handleLogout(); // Log out if no userId is found
             return;
         }
-
         const getUserInfo = async () => {
             try {
                 const userInfo = await fetchUserInfo(userId);
@@ -31,15 +31,38 @@ const ChatPage = ({ handleLogout }) => {
         getUserInfo();
     }, [handleLogout]);
 
-    const handleSend = (text) => {
+    // Fetch chat messages
+    useEffect(() => {
+        const fetchChatMessages = async () => {
+            try {
+                const data = await fetchMessages();
+                setMessages(data);
+            } catch (error) {
+                console.error('Failed to load messages:', error);
+                handleLogout(); // Log out if token is invalid
+            }
+        };
+
+        fetchChatMessages();
+    }, [handleLogout]);
+
+    // Handle sending messages
+    const handleSend = async (text) => {
         const newMessage = {
             username: user?.username || 'Anonymous',
             text,
-            timestamp: new Date().toLocaleTimeString(),
+            timestamp: new Date().toISOString(),
         };
-        setMessages((prev) => [...prev, newMessage]);
+
+        try {
+            const savedMessage = await saveMessage(newMessage);
+            setMessages((prev) => [...prev, savedMessage]);
+        } catch (error) {
+            console.error('Failed to send message:', error);
+        }
     };
 
+    // Toggle user list visibility
     const toggleUserList = () => {
         setIsUserListVisible((prev) => !prev);
     };

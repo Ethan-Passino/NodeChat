@@ -14,8 +14,10 @@ function App() {
   });
 
   const [userId, setUserId] = useState(() => localStorage.getItem('userId'));
+
   const handleLogin = (id) => {
     setIsLoggedIn(true);
+    setUserId(id); // Set the userId in state
     localStorage.setItem('isLoggedIn', 'true');
   };
 
@@ -43,7 +45,13 @@ function App() {
         />
         <Route
           path="/login"
-          element={isLoggedIn ? <Navigate to="/" replace /> : <LoginPage setIsLoggedIn={handleLogin} />}
+          element={
+            isLoggedIn ? (
+              <Navigate to="/" replace />
+            ) : (
+              <LoginPage setIsLoggedIn={handleLogin} />
+            )
+          }
         />
         <Route
           path="/signup"
@@ -53,21 +61,25 @@ function App() {
         {/* Protected Routes */}
         <Route
           path="/update-profile"
-          element={isLoggedIn ? (
-            <UpdateProfilePage handleLogout={handleLogout} />
-          ) : (
-            <Navigate to="/login" replace />
-          )}
+          element={
+            isLoggedIn ? (
+              <UpdateProfilePage handleLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            isLoggedIn ? (
+              <ChatPage handleLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
         />
 
-        <Route 
-          path="/chat"
-          element={isLoggedIn ? (
-            <ChatPage handleLogout={handleLogout} />
-          ): (
-            <Navigate to="/login" replace />
-          )}
-          />
         {/* Catch-All Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
