@@ -70,7 +70,7 @@ _🚧 Demo section will be updated once the MVP is completed._
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/nodechat.git
+   git clone https://github.com/EthanPassino/NodeChat
    ```
 2. Navigate to the project directory:
    ```bash
