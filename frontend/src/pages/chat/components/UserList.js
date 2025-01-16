@@ -9,7 +9,7 @@ const UserList = ({ users = [] }) => {
     );
 
     return (
-        <div className="bg-gradient-to-r from-red-800 to-red-900 w-64 p-4 text-white overflow-y-scroll">
+        <div className="bg-gradient-to-r from-red-800 to-red-900 w-64 p-4 text-white overflow-y-scroll h-screen">
             <h2 className="font-bold text-lg mb-4">Online Users</h2>
             {/* Search Bar */}
             <input

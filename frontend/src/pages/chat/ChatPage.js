@@ -9,6 +9,7 @@ const ChatPage = ({ handleLogout }) => {
     const [user, setUser] = useState();
     const [messages, setMessages] = useState([]);
     const [users, setUsers] = useState(['User1', 'User2', 'User3']);
+    const [isUserListVisible, setIsUserListVisible] = useState(true); // State to toggle UserList
 
     useEffect(() => {
         const userId = localStorage.getItem('userId');
@@ -39,6 +40,10 @@ const ChatPage = ({ handleLogout }) => {
         setMessages((prev) => [...prev, newMessage]);
     };
 
+    const toggleUserList = () => {
+        setIsUserListVisible((prev) => !prev);
+    };
+
     if (!user) {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-red-900 to-black text-white">
@@ -49,8 +54,27 @@ const ChatPage = ({ handleLogout }) => {
 
     return (
         <div className="flex h-screen">
-            {/* User List Sidebar */}
-            <UserList users={users} />
+            {/* User List Sidebar with Toggle */}
+            {isUserListVisible && (
+                <div className="relative">
+                    <UserList users={users} />
+                    {/* Collapse Button */}
+                    <button
+                        onClick={toggleUserList}
+                        className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-red-800 text-white p-2 shadow-md hover:bg-red-700"
+                    >
+                        &larr;
+                    </button>
+                </div>
+            )}
+            {!isUserListVisible && (
+                <button
+                    onClick={toggleUserList}
+                    className="bg-red-800 text-white p-2 shadow-md hover:bg-red-700"
+                >
+                    &rarr;
+                </button>
+            )}
 
             {/* Chat Area */}
             <div className="flex flex-col flex-grow">
