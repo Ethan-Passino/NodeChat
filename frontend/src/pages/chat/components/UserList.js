@@ -6,7 +6,7 @@ const UserList = ({ users }) => {
             <h2 className="font-bold text-lg mb-4">Online Users</h2>
             <ul className="space-y-2">
                 {users.map((user, index) => (
-                    <li key={index} className="p-2 rounded bg-red-700">
+                    <li key={index} className="p-2 rounded bg-red-700 shadow-md transition-transform transform hover:scale-105">
                         {user}
                     </li>
                 ))}
