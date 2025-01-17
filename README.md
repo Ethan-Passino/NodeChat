@@ -11,14 +11,11 @@ NodeChat is a peer-to-peer (P2P) chat application built using Node.js. It enable
 - **File Sharing**: Share files like images and documents seamlessly over the P2P connection.
 
 ### Enhanced Features 🌟
-- **Multipeer Chat**: Create group chats for direct communication between multiple peers.
 - **Custom Usernames**: Users can set unique usernames for easy identification.
 - **Status Indicators**: Display user statuses such as online, offline, or typing.
 
 ### UI/UX Features 🎨
 - **Clean and Simple Interface**: Intuitive design for an excellent user experience.
-- **Dark Mode**: Switch to a dark theme for comfort during nighttime use.
-- **Customizable Chat Themes**: Personalize the look and feel of the chat.
 - **Message Timestamps**: See when messages were sent and received.
 
 ### Networking Features 🌐
@@ -27,7 +24,6 @@ NodeChat is a peer-to-peer (P2P) chat application built using Node.js. It enable
 - **Connection Quality Monitoring**: Notify users of connection stability.
 
 ### Bonus Features (Planned) 🛠️
-- **Chat Backup**: Enable local or encrypted file backups.
 - **Notifications**: Notify users of new messages even when minimized.
 - **Self-Destructing Messages**: Messages that disappear after a set time.
 
