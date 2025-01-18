@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const UserList = ({ users = [] }) => {
+const UserList = ({ users = [], onUserSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     // Filter users based on the search term
@@ -25,7 +25,8 @@ const UserList = ({ users = [] }) => {
                     filteredUsers.map((user, index) => (
                         <li
                             key={index}
-                            className="p-2 rounded bg-red-700 shadow-md transition-transform transform hover:scale-105"
+                            onClick={() => onUserSelect(user)}
+                            className="p-2 rounded bg-red-700 shadow-md transition-transform transform hover:scale-105 cursor-pointer"
                         >
                             {user}
                         </li>
