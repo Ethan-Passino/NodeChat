@@ -1,39 +1,41 @@
 # NodeChat
 
-NodeChat is a peer-to-peer (P2P) chat application built using Node.js. It enables direct and secure communication between users with no reliance on a central server. NodeChat offers a sleek and user-friendly web interface, ensuring seamless interaction and privacy for its users.
+NodeChat is a peer-to-peer (P2P) chat application built using Node.js. It provides direct and secure communication between users with a sleek and user-friendly web interface, ensuring privacy and simplicity for seamless interaction.
 
 ## Features 🎯
 
 ### Core Features 🚀
-- **Direct Peer-to-Peer Messaging**: Messages are sent directly between users.
-- **Secure Communication**: End-to-end encryption protects messages from unauthorized access.
-- **Offline Messaging**: Store messages locally and deliver them when the recipient reconnects.
-- **File Sharing**: Share files like images and documents seamlessly over the P2P connection.
+- **Direct Peer-to-Peer Messaging**: Messages are sent directly between users without a central server.
+- **Secure Communication**: End-to-end encryption ensures all messages are private and protected.
+- **Message Delivery**: Real-time message exchange without relying on server storage.
 
 ### Enhanced Features 🌟
-- **Custom Usernames**: Users can set unique usernames for easy identification.
-- **Status Indicators**: Display user statuses such as online, offline, or typing.
+- **Custom Usernames**: Users can set unique usernames for personalization.
+- **Status Indicators**: Show online, offline, and typing statuses for better engagement.
 
 ### UI/UX Features 🎨
-- **Clean and Simple Interface**: Intuitive design for an excellent user experience.
-- **Message Timestamps**: See when messages were sent and received.
+- **Clean and Modern Interface**: Intuitive design for a seamless user experience.
+- **Customizable Themes**: Choose or create custom color themes.
+- **Message Timestamps**: Clearly display when messages were sent and received.
 
 ### Networking Features 🌐
-- **Discovery**: Find peers via local network discovery or NAT traversal.
+- **Peer Discovery**: Locate peers through local network discovery or signaling servers.
 - **Encryption Key Exchange**: Securely exchange encryption keys using Diffie-Hellman or RSA.
-- **Connection Quality Monitoring**: Notify users of connection stability.
+- **Connection Quality Monitoring**: Notify users about the stability of their connection.
 
-### Bonus Features (Planned) 🛠️
-- **Notifications**: Notify users of new messages even when minimized.
-- **Self-Destructing Messages**: Messages that disappear after a set time.
+### Future Enhancements 🛠️
+- **Notifications**: Alert users of new messages even when the app is minimized.
+- **Self-Destructing Messages**: Allow messages to disappear after a set duration.
+- **Chat Analytics**: Provide insights into user activity and engagement.
 
 ## Tech Stack 🛠️
 - **Backend**: Node.js
-- **Frontend**: React.js (for a modern web-based interface)
+- **Frontend**: React.js (modern web interface styled with Tailwind CSS)
 - **Networking**: WebRTC, `socket.io-p2p`
 - **Encryption**: `crypto` (Node.js built-in library)
 
 ## Project Structure 📂
+
 ```
 NodeChat/
 ├── backend/               # Backend server code
@@ -45,14 +47,16 @@ NodeChat/
 ```
 
 ## How It Works 🔧
-1. **Connection Establishment**:
-   - Uses WebRTC or `socket.io-p2p` for initial connection setup.
-2. **Message Transmission**:
-   - Messages are encrypted and sent directly over P2P connections.
+1. **Connection Setup**:
+   - WebRTC or `socket.io-p2p` initializes the peer-to-peer connection.
+   - A signaling server facilitates the initial connection.
+2. **Messaging**:
+   - Messages are encrypted and sent directly between peers.
+   - Message delivery is immediate with no server storage.
 3. **Encryption**:
-   - End-to-end encryption is implemented to secure communication.
-4. **User Interface**:
-   - A web-based interface displays chats with customization options.
+   - AES-256 secures all messages with secure key exchange protocols.
+4. **User Experience**:
+   - Users interact with a web-based interface featuring customizable themes, status indicators, and more.
 
 ## Demo 📺
 _🚧 Demo section will be updated once the MVP is completed._
