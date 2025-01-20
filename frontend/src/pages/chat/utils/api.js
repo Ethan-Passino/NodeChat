@@ -1,51 +1,80 @@
 const API_BASE_URL = 'http://localhost:2000/api';
+const DEFAULT_RECEIVER_ID = '6786e001cdc622acb81e9028'; // Default receiver ID
 
-export const fetchMessages = async () => {
+// Fetch messages between the current user and a selected user
+export const fetchMessages = async (userId, contactId) => {
     const token = localStorage.getItem('token'); // Retrieve the token
-    const response = await fetch('http://localhost:2000/api/messages', {
+
+    const response = await fetch(`${API_BASE_URL}/messages/${userId}/${contactId}`, {
         method: 'GET',
         headers: {
-            Authorization: `Bearer ${token}`, // Add the token here
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Include the token for authentication
         },
     });
 
     if (!response.ok) {
-        throw new Error('Failed to fetch messages');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch messages');
     }
 
     return response.json();
 };
 
-
 // Save a new message
-export const saveMessage = async (message) => {
+export const saveMessage = async (senderId, receiverId, text) => {
     const token = localStorage.getItem('token'); // Retrieve the token
+
+    // If receiverId is not provided, assign the default value
+    if (!receiverId) {
+        console.warn('receiverId is undefined, assigning default receiverId.');
+        receiverId = DEFAULT_RECEIVER_ID;
+    }
+
+    if(!senderId) {
+        console.warn("senderId is undefined, assigning default senderId.");
+        senderId = DEFAULT_RECEIVER_ID;
+    }
+
+    const messagePayload = {
+        senderId,
+        receiverId,
+        text,
+    };
+
     const response = await fetch(`${API_BASE_URL}/messages`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Include the token for authentication
         },
-        body: JSON.stringify(message),
+        body: JSON.stringify(messagePayload), // Send the message payload
     });
 
     if (!response.ok) {
-        throw new Error('Failed to save message');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save message');
     }
 
     return response.json();
 };
 
-
+// Fetch user information
 export const fetchUserInfo = async (userId) => {
-    try {
-        const response = await fetch(`http://localhost:2000/api/users/${userId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch user information.');
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching user info:', error);
-        throw error;
+    const token = localStorage.getItem('token'); // Retrieve the token
+
+    const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Include the token for authentication
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch user information.');
     }
+
+    return response.json();
 };

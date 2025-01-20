@@ -35,3 +35,55 @@ exports.getMessagesByUsername = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch messages.' });
     }
 };
+
+// Fetch messages between two users
+exports.getMessages = async (req, res) => {
+    const { userId, contactId } = req.params;
+
+    try {
+        const messages = await Message.find({
+            $or: [
+                { sender: userId, receiver: contactId },
+                { sender: contactId, receiver: userId },
+            ],
+        }).sort('timestamp');
+
+        res.status(200).json(messages);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// Send a message to a specific user
+exports.sendMessage = async (req, res) => {
+    try {
+        const { senderId, receiverId, text } = req.body;
+        const newMessage = await Message.create({
+            sender: senderId,
+            receiver: receiverId,
+            text,
+        });
+
+        res.status(201).json(newMessage);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error.', error: error.message });
+    }
+};
+
+exports.getMessagesBetweenUsers = async (req, res) => {
+    const { userId, contactId } = req.params;
+
+    try {
+        const messages = await Message.find({
+            $or: [
+                { sender: userId, receiver: contactId },
+                { sender: contactId, receiver: userId },
+            ],
+        }).sort('timestamp');
+
+        res.status(200).json(messages);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error.', error: error.message });
+    }
+};
+

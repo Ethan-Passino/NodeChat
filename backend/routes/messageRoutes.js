@@ -5,12 +5,9 @@ const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router();
 
 // Save a new message (requires authentication)
-router.post('/', authMiddleware, messageController.saveMessage);
+router.post('/', authMiddleware, messageController.sendMessage);
 
-// Get all messages (requires authentication)
-router.get('/', authMiddleware, messageController.getAllMessages);
-
-// Get messages by username (requires authentication)
-router.get('/:username', authMiddleware, messageController.getMessagesByUsername);
+// Get messages between two users (requires authentication)
+router.get('/:userId/:contactId', authMiddleware, messageController.getMessagesBetweenUsers);
 
 module.exports = router;

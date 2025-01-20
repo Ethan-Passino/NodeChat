@@ -9,10 +9,11 @@ import { fetchUserInfo, fetchMessages, saveMessage } from './utils/api';
 const ChatPage = ({ handleLogout }) => {
     const [user, setUser] = useState();
     const [messages, setMessages] = useState([]);
-    const [users, setUsers] = useState(['User1', 'User2', 'User3']);
+    const [users, setUsers] = useState(['User1', 'User2', 'User3']); // Replace with actual user-fetch logic
     const [isUserListVisible, setIsUserListVisible] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
 
+    // Fetch current user info
     useEffect(() => {
         const userId = localStorage.getItem('userId');
         if (!userId) {
@@ -33,37 +34,39 @@ const ChatPage = ({ handleLogout }) => {
         getUserInfo();
     }, [handleLogout]);
 
+    // Fetch messages between the current user and the selected user
     useEffect(() => {
         if (selectedUser) {
             const fetchChatMessages = async () => {
                 try {
-                    const data = await fetchMessages(); // Modify this to filter messages by `selectedUser` if needed
+                    const data = await fetchMessages(selectedUser._id); // Pass selected user's ID
                     setMessages(data);
                 } catch (error) {
                     console.error('Failed to load messages:', error);
-                    handleLogout();
+                    handleLogout(); // Log out if the token is invalid
                 }
             };
-
+    
             fetchChatMessages();
         }
-    }, [handleLogout, selectedUser]);
+    }, [selectedUser, handleLogout]);
+    
 
+    // Handle sending messages
     const handleSend = async (text) => {
-        const newMessage = {
-            username: user?.username || 'Anonymous',
-            text,
-            timestamp: new Date().toISOString(),
-        };
-
         try {
-            const savedMessage = await saveMessage(newMessage);
+            const senderId = user._id; // Current user's ID
+            const receiverId = selectedUser._id; // Selected user's ID
+    
+            const savedMessage = await saveMessage(senderId, receiverId, text);
             setMessages((prev) => [...prev, savedMessage]);
         } catch (error) {
             console.error('Failed to send message:', error);
         }
     };
+    
 
+    // Toggle visibility of the user list
     const toggleUserList = () => {
         setIsUserListVisible((prev) => !prev);
     };
@@ -78,9 +81,13 @@ const ChatPage = ({ handleLogout }) => {
 
     return (
         <div className="flex h-screen">
+            {/* User List Sidebar */}
             {isUserListVisible && (
                 <div className="relative">
-                    <UserList users={users} onUserSelect={setSelectedUser} />
+                    <UserList
+                        users={users}
+                        onUserSelect={(user) => setSelectedUser(user)}
+                    />
                     <button
                         onClick={toggleUserList}
                         className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-red-800 text-white p-2 shadow-md hover:bg-red-700"
@@ -98,6 +105,7 @@ const ChatPage = ({ handleLogout }) => {
                 </button>
             )}
 
+            {/* Chat Area */}
             <div className="flex flex-col flex-grow">
                 <ChatHeader username={user.username} handleLogout={handleLogout} />
                 {selectedUser ? (
