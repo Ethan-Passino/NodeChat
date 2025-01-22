@@ -1,70 +1,88 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ChatHeader from './components/ChatHeader';
 import ChatWindow from './components/ChatWindow';
 import ChatInput from './components/ChatInput';
 import UserList from './components/UserList';
 import HomeArea from './components/HomeArea';
 import { fetchUserInfo, fetchMessages, saveMessage } from './utils/api';
+import initializeSocket from './utils/socket'
 
 const ChatPage = ({ handleLogout }) => {
-    const [user, setUser] = useState();
+    const [user, setUser] = useState(null);
     const [messages, setMessages] = useState([]);
-    const [users, setUsers] = useState(['User1', 'User2', 'User3']); // Replace with actual user-fetch logic
+    const [users, setUsers] = useState([]); // Real-time online users
     const [isUserListVisible, setIsUserListVisible] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
+    const socket = useRef(null);
 
-    // Fetch current user info
+    // Initialize WebSocket and fetch user info on mount
     useEffect(() => {
         const userId = localStorage.getItem('userId');
-        if (!userId) {
+        const token = localStorage.getItem('token');
+
+        if (!userId || !token) {
             handleLogout();
             return;
         }
 
-        const getUserInfo = async () => {
+        const initialize = async () => {
             try {
                 const userInfo = await fetchUserInfo(userId);
                 setUser(userInfo.user);
+
+                // Initialize the socket connection
+                socket.current = initializeSocket(userInfo, setUsers, setMessages, selectedUser, user);
             } catch (error) {
-                console.error('Failed to fetch user info:', error);
+                console.error('Failed to initialize user or WebSocket:', error);
                 handleLogout();
             }
         };
 
-        getUserInfo();
+        initialize();
+
+        // Cleanup WebSocket connection on unmount
+        return () => {
+            if (socket.current) {
+                socket.current.disconnect();
+            }
+        };
     }, [handleLogout]);
 
-    // Fetch messages between the current user and the selected user
+    // Fetch messages for the selected user
     useEffect(() => {
-        if (selectedUser) {
+        if (selectedUser && user) {
             const fetchChatMessages = async () => {
                 try {
-                    const data = await fetchMessages(selectedUser._id); // Pass selected user's ID
+                    const data = await fetchMessages(user._id, selectedUser._id);
                     setMessages(data);
                 } catch (error) {
                     console.error('Failed to load messages:', error);
-                    handleLogout(); // Log out if the token is invalid
                 }
             };
-    
+
             fetchChatMessages();
         }
-    }, [selectedUser, handleLogout]);
-    
+    }, [selectedUser, user]);
 
     // Handle sending messages
     const handleSend = async (text) => {
         try {
-            const senderId = user._id; // Current user's ID
-            const receiverId = selectedUser._id; // Selected user's ID
-    
-            const savedMessage = await saveMessage(senderId, receiverId, text);
+            const newMessage = {
+                senderId: user._id,
+                receiverId: selectedUser._id,
+                text,
+            };
+
+            const savedMessage = await saveMessage(newMessage.senderId, newMessage.receiverId, newMessage.text);
+
+            // Emit message via WebSocket
+            socket.current.emit('sendMessage', savedMessage);
+
             setMessages((prev) => [...prev, savedMessage]);
         } catch (error) {
             console.error('Failed to send message:', error);
         }
     };
-    
 
     // Toggle visibility of the user list
     const toggleUserList = () => {
@@ -79,13 +97,16 @@ const ChatPage = ({ handleLogout }) => {
         );
     }
 
+    // Filter out your user to exclude you
+    const filteredUsers = users.filter((username) => username !== user.username);
+
     return (
         <div className="flex h-screen">
             {/* User List Sidebar */}
             {isUserListVisible && (
                 <div className="relative">
                     <UserList
-                        users={users}
+                        users={filteredUsers}
                         onUserSelect={(user) => setSelectedUser(user)}
                     />
                     <button

@@ -22,21 +22,20 @@ app.use(cors({
     credentials: true,
 }));
 
-
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 
 // Create HTTP server and WebSocket server
-const server = http.createServer(app);
+const server = http.createServer(app); // Attach the HTTP server to the app
 const io = new Server(server, {
-   cors: {
+    cors: {
         origin: 'http://localhost:3000',
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
-   },
+    },
 });
 
-// In Memory store for online users
+// In-memory store for online users
 const onlineUsers = new Map();
 
 // WebSocket connection logic
@@ -45,8 +44,11 @@ io.on('connection', (socket) => {
 
     // Handle user joining
     socket.on('userConnected', (username) => {
-        onlineUsers.set(socket.id, username);
-        io.emit('updateUsers', Array.from(onlineUsers.values()));
+        if(!(Array.from(onlineUsers.values()).some(value => value === username))) {
+            onlineUsers.set(socket.id, username);
+            console.log(`User connected: ${username}`);
+            io.emit('updateUsers', Array.from(onlineUsers.values())); // Broadcast the updated user list
+        }
     });
 
     // Handle message sending
@@ -59,12 +61,12 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('A user disconnected:', socket.id);
         onlineUsers.delete(socket.id);
-        io.emit('updateUsers', Array.from(onlineUsers.values())); // Broadcast updated users list to all clients
+        io.emit('updateUsers', Array.from(onlineUsers.values())); // Broadcast the updated user list
     });
 });
 
-//Start Server
+// Start the server
 const PORT = process.env.PORT || 2000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
