@@ -57,18 +57,23 @@ exports.getMessages = async (req, res) => {
 // Send a message to a specific user
 exports.sendMessage = async (req, res) => {
     try {
-        const { senderId, receiverId, text } = req.body;
+        const { senderId, receiverId, text, username } = req.body;
+
         const newMessage = await Message.create({
             sender: senderId,
             receiver: receiverId,
             text,
+            username,
         });
+
+        console.log(username);
 
         res.status(201).json(newMessage);
     } catch (error) {
         res.status(500).json({ message: 'Server error.', error: error.message });
     }
 };
+
 
 exports.getMessagesBetweenUsers = async (req, res) => {
     const { userId, contactId } = req.params;

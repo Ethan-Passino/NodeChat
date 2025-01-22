@@ -54,6 +54,7 @@ const ChatPage = ({ handleLogout }) => {
             const fetchChatMessages = async () => {
                 try {
                     const data = await fetchMessages(user._id, selectedUser._id);
+                    console.log(data);
                     setMessages(data);
                 } catch (error) {
                     console.error('Failed to load messages:', error);
@@ -71,9 +72,10 @@ const ChatPage = ({ handleLogout }) => {
                 senderId: user._id,
                 receiverId: selectedUser._id,
                 text,
+                username: user.username,
             };
 
-            const savedMessage = await saveMessage(newMessage.senderId, newMessage.receiverId, newMessage.text);
+            const savedMessage = await saveMessage(newMessage.senderId, newMessage.receiverId, newMessage.text, newMessage.username);
 
             // Emit message via WebSocket
             socket.current.emit('sendMessage', savedMessage);

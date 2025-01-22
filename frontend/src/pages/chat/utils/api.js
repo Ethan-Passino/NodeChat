@@ -17,12 +17,11 @@ export const fetchMessages = async (userId, contactId) => {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to fetch messages');
     }
-
     return response.json();
 };
 
 // Save a new message
-export const saveMessage = async (senderId, receiverId, text) => {
+export const saveMessage = async (senderId, receiverId, text, username) => {
     const token = localStorage.getItem('token'); // Retrieve the token
 
     // If receiverId is not provided, assign the default value
@@ -40,6 +39,7 @@ export const saveMessage = async (senderId, receiverId, text) => {
         senderId,
         receiverId,
         text,
+        username,
     };
 
     const response = await fetch(`${API_BASE_URL}/messages`, {
