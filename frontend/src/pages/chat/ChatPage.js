@@ -56,6 +56,9 @@ const ChatPage = ({ handleLogout }) => {
                     if(!selectedUser) {
                         return;
                     }
+
+                    console.log(selectedUser);
+                    console.log(user);
                     const data = await fetchMessages(user._id, selectedUser._id);
                     console.log(data);
                     setMessages(data);
@@ -103,8 +106,8 @@ const ChatPage = ({ handleLogout }) => {
     }
 
     // Filter out your user to exclude you
-    const filteredUsers = users.filter((username) => username !== user.username);
-
+    const filteredUsers = users.filter((u) => u.username !== user.username);
+    //console.log(filteredUsers);
     return (
         <div className="flex h-screen">
             {/* User List Sidebar */}
@@ -112,7 +115,7 @@ const ChatPage = ({ handleLogout }) => {
                 <div className="relative">
                     <UserList
                         users={filteredUsers}
-                        onUserSelect={(user) => setSelectedUser(user)}
+                        onUserSelect={(selectedUser) => setSelectedUser(selectedUser)}
                     />
                     <button
                         onClick={toggleUserList}

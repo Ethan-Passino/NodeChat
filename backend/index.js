@@ -43,11 +43,16 @@ io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
     // Handle user joining
-    socket.on('userConnected', (username) => {
-        if(!(Array.from(onlineUsers.values()).some(value => value === username))) {
-            onlineUsers.set(socket.id, username);
+    socket.on('userConnected', ({_id, username}) => {
+        // Check if the user is already connected!
+        const isAlreadyConnected = Array.from(onlineUsers.values()).some((user) => user._id === _id);
+
+        if(!isAlreadyConnected) {
+            onlineUsers.set(socket.id, {_id, username});
             console.log(`User connected: ${username}`);
             io.emit('updateUsers', Array.from(onlineUsers.values())); // Broadcast the updated user list
+        } else {
+            console.log(`User ${username} is already connected.`);
         }
     });
 

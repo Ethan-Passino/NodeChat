@@ -3,9 +3,9 @@ import React, { useState } from 'react';
 const UserList = ({ users = [], onUserSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Filter users based on the search term
+    // Filter users based on the search term (now includes username)
     const filteredUsers = users.filter((user) =>
-        user.toLowerCase().includes(searchTerm.toLowerCase())
+        user.username.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
@@ -22,13 +22,13 @@ const UserList = ({ users = [], onUserSelect }) => {
             {/* User List */}
             <ul className="space-y-2">
                 {filteredUsers.length > 0 ? (
-                    filteredUsers.map((user, index) => (
+                    filteredUsers.map((user) => (
                         <li
-                            key={index}
-                            onClick={() => onUserSelect(user)}
+                            key={user._id}
+                            onClick={() => onUserSelect(user)} // Pass the full user object
                             className="p-2 rounded bg-red-700 shadow-md transition-transform transform hover:scale-105 cursor-pointer"
                         >
-                            {user}
+                            {user.username}
                         </li>
                     ))
                 ) : (
