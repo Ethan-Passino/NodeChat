@@ -21,25 +21,18 @@ export const fetchMessages = async (userId, contactId) => {
 };
 
 // Save a new message
-export const saveMessage = async (senderId, receiverId, text, username) => {
+export const saveMessage = async (senderId, receiverId, text) => {
     const token = localStorage.getItem('token'); // Retrieve the token
 
-    // If receiverId is not provided, assign the default value
-    if (!receiverId) {
-        console.warn('receiverId is undefined, assigning default receiverId.');
-        receiverId = DEFAULT_RECEIVER_ID;
-    }
-
-    if(!senderId) {
-        console.warn("senderId is undefined, assigning default senderId.");
-        senderId = DEFAULT_RECEIVER_ID;
+    // Ensure required parameters are provided
+    if (!senderId || !receiverId) {
+        throw new Error('SenderId and ReceiverId are required to save a message.');
     }
 
     const messagePayload = {
         senderId,
         receiverId,
         text,
-        username,
     };
 
     const response = await fetch(`${API_BASE_URL}/messages`, {
@@ -58,6 +51,7 @@ export const saveMessage = async (senderId, receiverId, text, username) => {
 
     return response.json();
 };
+
 
 // Fetch user information
 export const fetchUserInfo = async (userId) => {

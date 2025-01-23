@@ -57,18 +57,21 @@ exports.getMessages = async (req, res) => {
 // Send a message to a specific user
 exports.sendMessage = async (req, res) => {
     try {
-        const { senderId, receiverId, text, username } = req.body;
+        const { senderId, receiverId, text } = req.body;
 
+        // Create the new message
         const newMessage = await Message.create({
             sender: senderId,
             receiver: receiverId,
             text,
-            username,
         });
 
-        console.log(username);
+        // Fetch and populate the message
+        const populatedMessage = await Message.findById(newMessage._id)
+            .populate('sender', 'username')
+            .populate('receiver', 'username');
 
-        res.status(201).json(newMessage);
+        res.status(201).json(populatedMessage);
     } catch (error) {
         res.status(500).json({ message: 'Server error.', error: error.message });
     }
@@ -84,11 +87,15 @@ exports.getMessagesBetweenUsers = async (req, res) => {
                 { sender: userId, receiver: contactId },
                 { sender: contactId, receiver: userId },
             ],
-        }).sort('timestamp');
+        })
+            .populate('sender', 'username') // Fetch only the `username` field of the sender
+            .populate('receiver', 'username') // Fetch only the `username` field of the receiver
+            .sort('timestamp'); // Sort by timestamp
 
         res.status(200).json(messages);
     } catch (error) {
         res.status(500).json({ message: 'Server error.', error: error.message });
     }
 };
+
 
