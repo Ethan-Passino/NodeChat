@@ -53,6 +53,9 @@ const ChatPage = ({ handleLogout }) => {
         if (selectedUser && user) {
             const fetchChatMessages = async () => {
                 try {
+                    if(!selectedUser) {
+                        return;
+                    }
                     const data = await fetchMessages(user._id, selectedUser._id);
                     console.log(data);
                     setMessages(data);
