@@ -49,6 +49,7 @@ NodeChat/
 ## How It Works 🔧
 1. **Connection Setup**:
    - WebRTC or `socket.io-p2p` initializes the peer-to-peer connection.
+   - This will be the last part of the project that gets complete, for now we are just doing it all on the server.
    - A signaling server facilitates the initial connection.
 2. **Messaging**:
    - Messages are encrypted and sent directly between peers.
