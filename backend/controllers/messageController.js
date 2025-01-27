@@ -90,7 +90,8 @@ exports.getMessagesBetweenUsers = async (req, res) => {
         })
             .populate('sender', 'username') // Fetch only the `username` field of the sender
             .populate('receiver', 'username') // Fetch only the `username` field of the receiver
-            .sort('timestamp'); // Sort by timestamp
+            .select('text sender receiver createdAt') // Explicitly include `createdAt`
+            .sort('createdAt'); // Sort by `createdAt`
 
         res.status(200).json(messages);
     } catch (error) {

@@ -56,11 +56,7 @@ const ChatPage = ({ handleLogout }) => {
                     if(!selectedUser) {
                         return;
                     }
-
-                    console.log(selectedUser);
-                    console.log(user);
                     const data = await fetchMessages(user._id, selectedUser._id);
-                    console.log(data);
                     setMessages(data);
                 } catch (error) {
                     console.error('Failed to load messages:', error);
