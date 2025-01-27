@@ -52,10 +52,14 @@ const LoginPage = ({ setIsLoggedIn }) => {
     
                 if (response.ok) {
                     localStorage.setItem('token', data.token); // Save the token
-                    localStorage.setItem('userId', data.userId); // Save the userId                    setIsLoggedIn(true);
+                    localStorage.setItem('userId', data.userId); // Save the userId
                     setIsLoggedIn(true);
                     navigate('/');
+                } else if (response.status === 400) {
+                    // Show the invalid credentials error
+                    setErrors({ general: data.message || 'Invalid email/username or password.' });
                 } else {
+                    // General server error
                     setErrors({ general: data.message || 'Login failed.' });
                 }
             } catch (error) {
@@ -66,6 +70,7 @@ const LoginPage = ({ setIsLoggedIn }) => {
     };
     
     
+    
 
     return (
         <div className="bg-gradient-to-r from-red-900 to-black min-h-screen flex flex-col text-white">
@@ -74,40 +79,48 @@ const LoginPage = ({ setIsLoggedIn }) => {
                 <h1 className="text-4xl font-extrabold mb-8">Log In</h1>
                 <form className="bg-red-800 p-6 rounded-lg shadow-md w-96 space-y-4" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="usernameOrEmail" className="block text-sm font-medium mb-2">Username or Email</label>
-                        <input 
-                            type="text" 
-                            id="usernameOrEmail" 
-                            name="usernameOrEmail" 
-                            value={formData.usernameOrEmail}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 rounded bg-red-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
-                            placeholder="Enter your username or email"
-                            required
-                        />
-                    </div>
-                    {errors.usernameOrEmail && <p className="text-red-400 text-sm">{errors.usernameOrEmail}</p>}
-                    <div>
-                        <label htmlFor="password" className="block text-sm font-medium mb-2">Password</label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 rounded bg-red-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
-                            placeholder="Enter your password"
-                            required
-                        />
-                    </div>
+                    <label htmlFor="usernameOrEmail" className="block text-sm font-medium mb-2">
+                        Username or Email
+                    </label>
+                    <input
+                        type="text"
+                        id="usernameOrEmail"
+                        name="usernameOrEmail"
+                        value={formData.usernameOrEmail}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 rounded bg-red-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        placeholder="Enter your username or email"
+                        required
+                    />
+                    {errors.usernameOrEmail && (
+                        <p className="text-red-400 text-sm">{errors.usernameOrEmail}</p>
+                    )}
+                </div>
+                <div>
+                    <label htmlFor="password" className="block text-sm font-medium mb-2">
+                        Password
+                    </label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="w-full px-4 py-2 rounded bg-red-900 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        placeholder="Enter your password"
+                        required
+                    />
                     {errors.password && <p className="text-red-400 text-sm">{errors.password}</p>}
-                    <button 
-                        type="submit" 
-                        className="w-full bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 transform hover:scale-105"
-                    >
-                        Log In
-                    </button>
+                </div>
+                {errors.general && <p className="text-red-400 text-sm">{errors.general}</p>}
+                <button
+                    type="submit"
+                    className="w-full bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 transform hover:scale-105"
+                >
+                    Log In
+                </button>
                 </form>
+
                 <p className="mt-4 text-sm">
                     Don't have an account? <a href="/signup" className="text-red-400 hover:text-red-300 underline">Sign up</a>
                 </p>
