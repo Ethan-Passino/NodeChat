@@ -1,4 +1,4 @@
-aw# NodeChat (WIP)
+# NodeChat (WIP)
 
 NodeChat is a peer-to-peer (P2P) chat application built using Node.js. It provides direct and secure communication between users with a sleek and user-friendly web interface, ensuring privacy and simplicity for seamless interaction.
 
