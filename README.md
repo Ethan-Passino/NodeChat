@@ -3,6 +3,10 @@
 NodeChat is a peer-to-peer (P2P [Subject to change]) chat application built using Node.js. It provides direct and secure communication between users with a sleek and user-friendly web interface, ensuring privacy and simplicity for seamless interaction.
 
 All of the below features are subject to change at any time, some things might be removed or added at some point.
+
+## Dev Note
+Currently sick, so I haven't been fully working on this at the moment.
+
 ## Features 🎯
 
 ### Core Features 🚀
