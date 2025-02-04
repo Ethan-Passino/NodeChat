@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const userRoutes = require('./routes/userRoutes');
 const messageRoutes = require('./routes/messageRoutes');
+const Message = require('./models/Message');
 const http = require('http');
 const { Server } = require('socket.io');
 
@@ -61,6 +62,14 @@ io.on('connection', (socket) => {
         console.log("Message received:", message);
         io.emit('receiveMessage', message); // Broadcast to all clients
     });
+
+    socket.on('updateMessage', async (updatedMessage) => {
+        const populatedMessage = await Message.findById(updatedMessage._id)
+            .populate('sender', 'username'); // Re-populate sender field
+    
+        io.emit('messageUpdated', populatedMessage);
+    });
+    
 
     // Handle user disconnecting
     socket.on('disconnect', () => {

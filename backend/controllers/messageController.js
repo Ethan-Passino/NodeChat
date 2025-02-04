@@ -99,4 +99,49 @@ exports.getMessagesBetweenUsers = async (req, res) => {
     }
 };
 
+// Edit a message
+exports.editMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const { newText } = req.body;
+
+        const updatedMessage = await Message.findByIdAndUpdate(
+            messageId,
+            { text: newText, editedAt: new Date() },
+            { new: true }
+        ).populate('sender', 'username') // Populate sender field again
+
+        if (!updatedMessage) {
+            return res.status(404).json({ message: 'Message not found.' });
+        }
+
+        res.status(200).json(updatedMessage);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error.', error: error.message });
+    }
+};
+
+
+exports.deleteMessage = async (req, res) => {
+    try {
+        const { messageId } = req.params;
+        const userId = req.user.userId; // Authenticated user's ID
+
+        // Find the message and ensure the sender is the user making the request
+        const message = await Message.findById(messageId);
+        if (!message) {
+            return res.status(404).json({ message: 'Message not found' });
+        }
+
+        if (message.sender.toString() !== userId) {
+            return res.status(403).json({ message: 'You can only delete your own messages' });
+        }
+
+        await Message.findByIdAndDelete(messageId);
+        res.status(200).json({ message: 'Message deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 

@@ -5,7 +5,7 @@ import ChatWindow from './components/ChatWindow';
 import ChatInput from './components/ChatInput';
 import UserList from './components/UserList';
 import HomeArea from './components/HomeArea';
-import { fetchUserInfo, fetchMessages, saveMessage } from './utils/api';
+import { fetchUserInfo, fetchMessages, saveMessage, editMessage, deleteMessage } from './utils/api';
 
 const ChatPage = ({ handleLogout }) => {
     const [user, setUser] = useState(null);
@@ -29,29 +29,38 @@ const ChatPage = ({ handleLogout }) => {
                 const userInfo = await fetchUserInfo(userId);
                 setUser(userInfo.user);
 
-                // ✅ Prevent multiple socket connections
                 if (!socket.current) {
                     socket.current = io('http://localhost:2000');
 
-                    // ✅ Emit user connection event
                     socket.current.emit('userConnected', userInfo.user);
 
-                    // ✅ Listen for online users update
                     socket.current.on('updateUsers', (onlineUsers) => {
                         console.log("Updated Users List:", onlineUsers);
                         setUsers(onlineUsers);
                     });
 
-                    // ✅ Listen for new messages and update UI
                     socket.current.on('receiveMessage', async (message) => {
                         if (
                             (message.sender._id === selectedUser?._id && message.receiver._id === user._id) ||
                             (message.sender._id === user._id && message.receiver._id === selectedUser?._id)
                         ) {
-                            // ✅ Fetch updated messages from backend when new message is received
                             const updatedMessages = await fetchMessages(user._id, selectedUser._id);
                             setMessages(updatedMessages);
                         }
+                    });
+
+                    socket.current.on('messageUpdated', async (updatedMessage) => {
+                        setMessages((prevMessages) =>
+                            prevMessages.map((msg) =>
+                                msg._id === updatedMessage._id ? updatedMessage : msg
+                            )
+                        );
+                    });
+
+                    socket.current.on('messageDeleted', (messageId) => {
+                        setMessages((prevMessages) =>
+                            prevMessages.filter((msg) => msg._id !== messageId)
+                        );
                     });
                 }
             } catch (error) {
@@ -65,12 +74,11 @@ const ChatPage = ({ handleLogout }) => {
         return () => {
             if (socket.current) {
                 socket.current.disconnect();
-                socket.current = null; // ✅ Ensure socket is properly cleaned up
+                socket.current = null;
             }
         };
     }, [handleLogout, selectedUser]);
 
-    // Fetch messages for the selected user
     useEffect(() => {
         if (selectedUser && user) {
             const fetchChatMessages = async () => {
@@ -85,7 +93,6 @@ const ChatPage = ({ handleLogout }) => {
         }
     }, [selectedUser, user]);
 
-    // Handle sending messages
     const handleSend = async (text) => {
         try {
             const newMessage = {
@@ -96,23 +103,50 @@ const ChatPage = ({ handleLogout }) => {
             };
 
             const savedMessage = await saveMessage(
-                newMessage.senderId, 
-                newMessage.receiverId, 
-                newMessage.text, 
+                newMessage.senderId,
+                newMessage.receiverId,
+                newMessage.text,
                 newMessage.username
             );
 
-            // ✅ Emit message via WebSocket
             socket.current.emit('sendMessage', savedMessage);
 
-            // ✅ Append message to local UI immediately
             setMessages((prev) => [...prev, savedMessage]);
         } catch (error) {
             console.error('Failed to send message:', error);
         }
     };
 
-    // Toggle visibility of the user list
+    const handleEditMessage = async (messageId, newText) => {
+        try {
+            const updatedMessage = await editMessage(messageId, newText);
+    
+            // Ensure sender remains populated after editing
+            setMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                    msg._id === messageId
+                        ? { ...msg, text: updatedMessage.text, editedAt: updatedMessage.editedAt, sender: msg.sender }
+                        : msg
+                )
+            );
+    
+            socket.current.emit('updateMessage', updatedMessage);
+        } catch (error) {
+            console.error('Failed to edit message:', error);
+        }
+    };
+    
+
+    const handleDeleteMessage = async (messageId) => {
+        try {
+            await deleteMessage(messageId);
+            socket.current.emit('deleteMessage', messageId);
+            setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
+        } catch (error) {
+            console.error('Failed to delete message:', error);
+        }
+    };
+
     const toggleUserList = () => {
         setIsUserListVisible((prev) => !prev);
     };
@@ -125,18 +159,13 @@ const ChatPage = ({ handleLogout }) => {
         );
     }
 
-    // ✅ Only filter out the current user from the online list, NOT the selected user
     const filteredUsers = users.filter((u) => u._id !== user._id);
 
     return (
         <div className="flex h-screen">
-            {/* User List Sidebar */}
             {isUserListVisible && (
                 <div className="relative">
-                    <UserList
-                        users={filteredUsers}
-                        onUserSelect={(selectedUser) => setSelectedUser(selectedUser)}
-                    />
+                    <UserList users={filteredUsers} onUserSelect={(selectedUser) => setSelectedUser(selectedUser)} />
                     <button
                         onClick={toggleUserList}
                         className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-red-800 text-white p-2 shadow-md hover:bg-red-700"
@@ -146,20 +175,22 @@ const ChatPage = ({ handleLogout }) => {
                 </div>
             )}
             {!isUserListVisible && (
-                <button
-                    onClick={toggleUserList}
-                    className="bg-red-800 text-white p-2 shadow-md hover:bg-red-700"
-                >
+                <button onClick={toggleUserList} className="bg-red-800 text-white p-2 shadow-md hover:bg-red-700">
                     &rarr;
                 </button>
             )}
 
-            {/* Chat Area */}
             <div className="flex flex-col flex-grow">
                 <ChatHeader username={user.username} handleLogout={handleLogout} />
                 {selectedUser ? (
                     <>
-                        <ChatWindow messages={messages} />
+                        <ChatWindow
+                            messages={messages}
+                            userId={user._id}
+                            handleEditMessage={handleEditMessage}
+                            handleDeleteMessage={handleDeleteMessage}
+                            user={user}
+                        />
                         <ChatInput onSend={handleSend} />
                     </>
                 ) : (

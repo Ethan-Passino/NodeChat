@@ -72,3 +72,42 @@ export const fetchUserInfo = async (userId) => {
 
     return response.json();
 };
+
+export const editMessage = async (messageId, newText) => {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(`${API_BASE_URL}/messages/${messageId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ newText }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to edit message');
+    }
+
+    return response.json();
+};
+
+export const deleteMessage = async (messageId) => {
+    const token = localStorage.getItem('token');
+
+    const response = await fetch(`${API_BASE_URL}/messages/${messageId}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete message');
+    }
+
+    return response.json();
+};
+
