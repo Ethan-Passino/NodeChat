@@ -15,7 +15,7 @@ const HomePage = ({ isLoggedIn, handleLogout }) => {
                     Welcome to NodeChat
                 </h2>
                 <p className="text-lg max-w-2xl">
-                    NodeChat is your go-to peer-to-peer messaging platform with secure communication and a user-friendly interface. 
+                    NodeChat is your go-to messaging platform with secure communication and a user-friendly interface. 
                     Connect, chat, and share like never before!
                 </p>
                 <div className="mt-6">
