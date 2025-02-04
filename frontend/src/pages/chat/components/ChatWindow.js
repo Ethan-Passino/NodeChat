@@ -15,7 +15,6 @@ const ChatWindow = ({ messages }) => {
         }).format(date);
     };
 
-    console.log(messages);
     return (
         <div className="flex-grow p-4 bg-gradient-to-r from-red-900 to-black overflow-y-auto">
             <div className="space-y-3">

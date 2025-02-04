@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
+import io from 'socket.io-client';
 import ChatHeader from './components/ChatHeader';
 import ChatWindow from './components/ChatWindow';
 import ChatInput from './components/ChatInput';
 import UserList from './components/UserList';
 import HomeArea from './components/HomeArea';
 import { fetchUserInfo, fetchMessages, saveMessage } from './utils/api';
-import initializeSocket from './utils/socket'
 
 const ChatPage = ({ handleLogout }) => {
     const [user, setUser] = useState(null);
     const [messages, setMessages] = useState([]);
-    const [users, setUsers] = useState([]); // Real-time online users
+    const [users, setUsers] = useState([]); // Online users
     const [isUserListVisible, setIsUserListVisible] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
     const socket = useRef(null);
 
-    // Initialize WebSocket and fetch user info on mount
     useEffect(() => {
         const userId = localStorage.getItem('userId');
         const token = localStorage.getItem('token');
@@ -30,8 +29,31 @@ const ChatPage = ({ handleLogout }) => {
                 const userInfo = await fetchUserInfo(userId);
                 setUser(userInfo.user);
 
-                // Initialize the socket connection
-                socket.current = initializeSocket(userInfo, setUsers, setMessages, selectedUser, user);
+                // ✅ Prevent multiple socket connections
+                if (!socket.current) {
+                    socket.current = io('http://localhost:2000');
+
+                    // ✅ Emit user connection event
+                    socket.current.emit('userConnected', userInfo.user);
+
+                    // ✅ Listen for online users update
+                    socket.current.on('updateUsers', (onlineUsers) => {
+                        console.log("Updated Users List:", onlineUsers);
+                        setUsers(onlineUsers);
+                    });
+
+                    // ✅ Listen for new messages and update UI
+                    socket.current.on('receiveMessage', async (message) => {
+                        if (
+                            (message.sender._id === selectedUser?._id && message.receiver._id === user._id) ||
+                            (message.sender._id === user._id && message.receiver._id === selectedUser?._id)
+                        ) {
+                            // ✅ Fetch updated messages from backend when new message is received
+                            const updatedMessages = await fetchMessages(user._id, selectedUser._id);
+                            setMessages(updatedMessages);
+                        }
+                    });
+                }
             } catch (error) {
                 console.error('Failed to initialize user or WebSocket:', error);
                 handleLogout();
@@ -40,29 +62,25 @@ const ChatPage = ({ handleLogout }) => {
 
         initialize();
 
-        // Cleanup WebSocket connection on unmount
         return () => {
             if (socket.current) {
                 socket.current.disconnect();
+                socket.current = null; // ✅ Ensure socket is properly cleaned up
             }
         };
-    }, [handleLogout]);
+    }, [handleLogout, selectedUser]);
 
     // Fetch messages for the selected user
     useEffect(() => {
         if (selectedUser && user) {
             const fetchChatMessages = async () => {
                 try {
-                    if(!selectedUser) {
-                        return;
-                    }
                     const data = await fetchMessages(user._id, selectedUser._id);
                     setMessages(data);
                 } catch (error) {
                     console.error('Failed to load messages:', error);
                 }
             };
-
             fetchChatMessages();
         }
     }, [selectedUser, user]);
@@ -77,11 +95,17 @@ const ChatPage = ({ handleLogout }) => {
                 username: user.username,
             };
 
-            const savedMessage = await saveMessage(newMessage.senderId, newMessage.receiverId, newMessage.text, newMessage.username);
+            const savedMessage = await saveMessage(
+                newMessage.senderId, 
+                newMessage.receiverId, 
+                newMessage.text, 
+                newMessage.username
+            );
 
-            // Emit message via WebSocket
+            // ✅ Emit message via WebSocket
             socket.current.emit('sendMessage', savedMessage);
 
+            // ✅ Append message to local UI immediately
             setMessages((prev) => [...prev, savedMessage]);
         } catch (error) {
             console.error('Failed to send message:', error);
@@ -101,9 +125,9 @@ const ChatPage = ({ handleLogout }) => {
         );
     }
 
-    // Filter out your user to exclude you
-    const filteredUsers = users.filter((u) => u.username !== user.username);
-    //console.log(filteredUsers);
+    // ✅ Only filter out the current user from the online list, NOT the selected user
+    const filteredUsers = users.filter((u) => u._id !== user._id);
+
     return (
         <div className="flex h-screen">
             {/* User List Sidebar */}
