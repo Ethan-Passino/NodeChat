@@ -6,6 +6,7 @@ import ChatInput from './components/ChatInput';
 import UserList from './components/UserList';
 import HomeArea from './components/HomeArea';
 import { fetchUserInfo, fetchMessages, saveMessage, editMessage, deleteMessage } from './utils/api';
+const REACT_ROOT_BACKEND = process.env.REACT_APP_BACKEND_ROOT;
 
 const ChatPage = ({ handleLogout }) => {
     const [user, setUser] = useState(null);
@@ -30,7 +31,7 @@ const ChatPage = ({ handleLogout }) => {
                 setUser(userInfo.user);
 
                 if (!socket.current) {
-                    socket.current = io('http://localhost:2000');
+                    socket.current = io(`${REACT_ROOT_BACKEND}`);
 
                     socket.current.emit('userConnected', userInfo.user);
 

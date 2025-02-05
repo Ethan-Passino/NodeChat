@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import NavBar from '../components/NavBar';
+const API_BASE_URL = process.env.REACT_APP_BACKEND;
 
 const UpdateProfilePage = ({ handleLogout }) => {
     const userId = localStorage.getItem('userId');
@@ -56,7 +57,7 @@ const UpdateProfilePage = ({ handleLogout }) => {
                     body.newPassword = formData.newPassword;
                 }
 
-                const response = await fetch(`http://localhost:2000/api/users/${userId}`, {
+                const response = await fetch(`${API_BASE_URL}/users/${userId}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body),

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:2000/api';
+const API_BASE_URL = process.env.REACT_APP_BACKEND;
 const DEFAULT_RECEIVER_ID = '6786e001cdc622acb81e9028'; // Default receiver ID
 
 // Fetch messages between the current user and a selected user

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavBar from "../components/NavBar";
+const API_BASE_URL = process.env.REACT_APP_BACKEND;
 
 const SignupPage = () => {
     const navigate = useNavigate();
@@ -51,7 +52,7 @@ const SignupPage = () => {
         if (validateForm()) {
             // Form is valid, proceed with API call
             try {
-                const response = await fetch('http://localhost:2000/api/users/signup', {
+                const response = await fetch(`${API_BASE_URL}/users/signup`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

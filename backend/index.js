@@ -18,7 +18,7 @@ app.use(express.json());
 
 // Enable CORS
 app.use(cors({
-    origin: 'http://localhost:3000', // Replace with the URL of your frontend
+    origin: `${process.env.REACT_FRONTEND}`,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));
@@ -31,7 +31,7 @@ app.use('/api/messages', messageRoutes);
 const server = http.createServer(app); // Attach the HTTP server to the app
 const io = new Server(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: `${process.env.REACT_FRONTEND}`,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
     },
 });

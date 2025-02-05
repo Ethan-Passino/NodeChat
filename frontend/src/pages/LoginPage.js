@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import NavBar from "../components/NavBar";
 import { useNavigate } from 'react-router-dom';
+const API_BASE_URL = process.env.REACT_APP_BACKEND;
 
 const LoginPage = ({ setIsLoggedIn }) => {
     const navigate = useNavigate();
@@ -39,7 +40,7 @@ const LoginPage = ({ setIsLoggedIn }) => {
     
         if (validateForm()) {
             try {
-                const response = await fetch('http://localhost:2000/api/users/login', {
+                const response = await fetch(`${API_BASE_URL}/users/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
